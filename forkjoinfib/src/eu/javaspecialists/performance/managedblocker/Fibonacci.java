@@ -5,6 +5,7 @@ import java.util.concurrent.*;
 
 // demo 1: test100_000_000() time = 47516
 // demo 2: test100_000_000() time = 23851
+// demo 3: test100_000_000() time = 12831
 
 
 
@@ -26,10 +27,19 @@ public class Fibonacci {
         BigInteger f1 = f(half);
         BigInteger f0 = f0_task.join();
 
-        if (n % 2 == 1) {
-            return f0.multiply(f0).add(f1.multiply(f1));
-        } else {
-            return f0.shiftLeft(1).add(f1).multiply(f1);
+        long time = n > 10000 ? System.currentTimeMillis() : 0;
+        try {
+            if (n % 2 == 1) {
+                return f0.multiply(f0).add(f1.multiply(f1));
+            } else {
+                return f0.shiftLeft(1).add(f1).multiply(f1);
+            }
+        } finally {
+            time = n > 10000 ? System.currentTimeMillis() - time : 0;
+            if (time > 30) {
+                System.out.printf("f(%d) took %d%n", n, time);
+            }
+
         }
     }
 }
