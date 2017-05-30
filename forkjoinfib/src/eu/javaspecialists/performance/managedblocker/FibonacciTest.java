@@ -9,6 +9,8 @@ import static org.junit.Assert.*;
 // TODO: Code for demo?  Sign up here
 // TODO: tinyurl.com/jprime17
 
+// demo 1: test100_000_000() time = 47516
+
 
 // JVM parameters: -Xbootclasspath/p:/Users/heinz/git/projects/talks/17_JPrime/TurboChargeManagedBlockerJPrime2017/out/production/mathhack
 // -ea -verbose:gc -Xmx8g -Xms8g -XX:NewSize=6g -XX:SurvivorRatio=1
