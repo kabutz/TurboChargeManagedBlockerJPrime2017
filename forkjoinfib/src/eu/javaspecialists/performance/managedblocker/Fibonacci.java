@@ -8,11 +8,14 @@ import java.util.concurrent.*;
 // demo 2: test100_000_000() time = 23851
 // demo 3: test100_000_000() time = 12831
 // demo 4: test100_000_000() time = 10121
+// demo 5: test100_000_000() time = 7075
 
 
 // TODO: Code for demo?  Sign up here
 // TODO: tinyurl.com/jprime17
 public class Fibonacci {
+    private final BigInteger RESERVED = BigInteger.valueOf(-1000);
+
     public BigInteger f(int n) {
         Map<Integer, BigInteger> cache = new ConcurrentHashMap<>();
         cache.put(0, BigInteger.ZERO);
@@ -22,7 +25,7 @@ public class Fibonacci {
 
     public BigInteger f(int n, Map<Integer, BigInteger> cache) {
 
-        BigInteger result = cache.get(n);
+        BigInteger result = cache.putIfAbsent(n, RESERVED);
 
         if (result == null) {
 
@@ -44,12 +47,25 @@ public class Fibonacci {
                 } else {
                     result = f0.shiftLeft(1).add(f1).multiply(f1);
                 }
-                cache.put(n, result);
+                synchronized (RESERVED) {
+                    cache.put(n, result);
+                    RESERVED.notifyAll();
+                }
             } finally {
                 time = n > 10000 ? System.currentTimeMillis() - time : 0;
                 if (time > 30) {
                     System.out.printf("f(%d) took %d%n", n, time);
                 }
+            }
+        } else if (result == RESERVED) {
+            try {
+                synchronized (RESERVED) {
+                    while((result = cache.get(n)) == RESERVED) {
+                        RESERVED.wait();
+                    }
+                }
+            } catch (InterruptedException e) {
+                throw new CancellationException("interrupted");
             }
         }
         return result;
